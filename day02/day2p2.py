@@ -6,9 +6,9 @@
 # The second column [...] must be the outcome: 
 #   X for losing, Y for draw, and Z for winning.
 
-# X wins over C, Y wins over A, Z wins over B
-# X draws with A, Y draws with B, Z draws with C 
-# X loses to B, Y loses to C, Z loses to A
+# X is losing, so AX = scissors, BX = rock, and CX = paper 
+# Y is a draw, so AY = rock, BY = paper, CY = scissors
+# X is a win, so AZ = paper, BZ = scissors, CZ = rock 
 
 # Problem() is my class that ingests the day's input and structures it for easy computation
 
@@ -23,23 +23,23 @@ class Problem():
 
 # Score an individual line of the tournament 
 def score(row):
-    # "The score for a single round is the score for the shape you selected 
-    # (1 for Rock, 2 for Paper, and 3 for Scissors)"
+    # ...plus the score for the outcome of the round 
+    # (0 if you lost, 3 if the round was a draw, and 6 if you won).
     [theirplay, outcome] = row.split(" ")
     outcomes = {"X" : 0, "Y" : 3, "Z" : 6}
     scoreoutcome = outcomes.get(outcome)
     print("Scored {} for an outcome of {}".format(scoreoutcome, outcome))
 
-    # ...plus the score for the outcome of the round 
-    # (0 if you lost, 3 if the round was a draw, and 6 if you won).
-    wins = ["C X", "A Y", "B Z"]
-    draws = ["A X", "B Y", "C Z"]
-    losses = ["B X", "C Y", "A Z"]
-    outcomes = {tuple(wins) : 6, tuple(draws) : 3, tuple(losses) : 0}
-    for k in outcomes.keys():
+    # "The score for a single round is the score for the outcome  
+    # (1 for Rock, 2 for Paper, and 3 for Scissors)"
+    rocks = ["B X", "A Y", "C Z"]
+    papers = ["C X", "B Y", "A Z"]
+    scissors = ["A X", "C Y", "B Z"]
+    choices = {tuple(rocks) : 1, tuple(papers) : 2, tuple(scissors) : 3}
+    for k in choices.keys():
         if row in k:
-            scoreoutcome = outcomes.get(k)
-    print("Scored {} for the outcome of {}".format(scoreoutcome, row))
+            scorechoice = choices.get(k)
+    print("Scored {} for the choice of {}".format(scorechoice, row))
     score = scorechoice + scoreoutcome 
     return score
 
