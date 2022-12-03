@@ -1,4 +1,4 @@
-# Day 1, Part 1 of Advent of Code 2022
+# Day 2, Part 1 of Advent of Code 2022
 # Scoring a rock-paper-scissors tournament 
 
 # The first column is what your opponent is going to play: 
