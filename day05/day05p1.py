@@ -3,10 +3,7 @@
 
 # Turn this ugly-ass format into CSV
 def normalize(inputline: str):
-    a = inputline.replace('    ', ',')
-    a = a.replace('] [', ',')
-    a = a.replace('[','')
-    a = a.replace(']',',')
+    a = inputline.replace('    ', ',').replace('] [', ',').replace('[','').replace(']',',')
     outputrow = a.split(',')
     return outputrow
 
@@ -30,43 +27,33 @@ class Crates():
             for stack, crate in enumerate(normalize(line)):
                 if crate != '':
                     board[stack].append(crate)
-
-        # TODO: Get moves
+        
+        # Now get moves
         moves = []
         for line in movelines: 
             qty, src, dst = line.replace('move ', '').replace(' from ', ',').replace(' to ',',').split(',')
             moves.append([int(qty), int(src), int(dst)])
-
         self.moves = moves
         self.board = board 
         return            
 
     def process(self):
+        # A crane that moves one crate at a time 
         for move in self.moves:
-            # print("-=-=-")
             qty, src, dst = move[0], move[1]-1, move[2]-1
-            # print("Moving {} from {} to {}".format(qty, src, dst))
-            # print("Stack {} has {} crates".format(qty, len(self.board[src])))
             for i in range(qty):
-                crate = self.board[src].pop()
-                self.board[dst].append(crate)
-            # print(self.board)
-
+                self.board[dst].append(self.board[src].pop())
+            
     def newprocess(self):
+        # A crane that moves 'qty' crates at a time 
         for move in self.moves:
-            # print("-=-=-")
             qty, src, dst = move[0], move[1]-1, move[2]-1
-            # print("Moving {} from {} to {}".format(qty, src, dst))
-            # print("Stack {} has {} crates".format(qty, len(self.board[src])))
             cranehold = []
-            for i in range(qty):
-                a = self.board[src].pop()
-                cranehold.append(a)
-            for j in range(qty):
-                b = cranehold.pop()
-                self.board[dst].append(b)
-            # print(self.board)
-
+            for _ in range(qty):
+                cranehold.append(self.board[src].pop())
+            for _ in range(qty):
+                self.board[dst].append(cranehold.pop())
+            
 
 def main():
     # Ingest and format the data
