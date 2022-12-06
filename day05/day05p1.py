@@ -1,44 +1,85 @@
 # Day 5, Part 1 of Advent of Code 2022
-# [describe problem here]
+# Manipulate a stack of crates
 
-# Define parsing & helper functions
-def jobify(jobstring: str):
-        lowerbound, upperbound = jobstring.split("-")
-        return set((range(int(lowerbound), int(upperbound)+1)))
+# Turn this ugly-ass format into CSV
+def normalize(inputline: str):
+    a = inputline.replace('    ', ',')
+    a = a.replace('] [', ',')
+    a = a.replace('[','')
+    a = a.replace(']',',')
+    outputrow = a.split(',')
+    return outputrow
 
-# Problem() is my class that ingests the day's input and structures it for easy computation
-class Problem():
+# Crates() is my class that ingests the day's input and structures it for easy computation
+class Crates():
     def __init__(self, filename):
-        plan = []
-        lines = open(filename).read().splitlines()
-        for line in lines:
-            job1, job2 = line.split(",")
-            plan.append([jobify(job1), jobify(job2)])
-        self.plan = plan
-        return
+        lines = open(filename).read().split('\n\n')
+        boardlines, movelines = lines[0].splitlines(), lines[1].splitlines()
+        
+        # From the last (popped) row of boardlines, make a list of 
+        # nonwhitespace characters, sort them, and take the largest, 
+        # converting it to an int(). This should be the number of 
+        # stacks we need.
+        a = int(sorted(boardlines.pop(-1).split(), reverse=True)[0])
+        board = [[] for x in range(a)]
+        
+        # From the remaining 'boardlines', find all the crates and store them
+        # in the list 'board' we just initialized.
+        # A 'stack' is a column, a 'height' is how tall the stack is. 
+        for line in reversed(boardlines):
+            for stack, crate in enumerate(normalize(line)):
+                if crate != '':
+                    board[stack].append(crate)
 
-# Define a function to evaluate key figures of merit 
+        # TODO: Get moves
+        moves = []
+        for line in movelines: 
+            qty, src, dst = line.replace('move ', '').replace(' from ', ',').replace(' to ',',').split(',')
+            moves.append([int(qty), int(src), int(dst)])
 
+        self.moves = moves
+        self.board = board 
+        return            
+
+    def process(self):
+        for move in self.moves:
+            # print("-=-=-")
+            qty, src, dst = move[0], move[1]-1, move[2]-1
+            # print("Moving {} from {} to {}".format(qty, src, dst))
+            # print("Stack {} has {} crates".format(qty, len(self.board[src])))
+            for i in range(qty):
+                crate = self.board[src].pop()
+                self.board[dst].append(crate)
+            # print(self.board)
+
+    def newprocess(self):
+        for move in self.moves:
+            # print("-=-=-")
+            qty, src, dst = move[0], move[1]-1, move[2]-1
+            # print("Moving {} from {} to {}".format(qty, src, dst))
+            # print("Stack {} has {} crates".format(qty, len(self.board[src])))
+            cranehold = []
+            for i in range(qty):
+                a = self.board[src].pop()
+                cranehold.append(a)
+            for j in range(qty):
+                b = cranehold.pop()
+                self.board[dst].append(b)
+            # print(self.board)
 
 
 def main():
     # Ingest and format the data
-    t = Problem("C:\\Users\\Jurph\\Documents\\Python Scripts\\aoc2022\\day05\\test.txt")
-    p = Problem("C:\\Users\\Jurph\\Documents\\Python Scripts\\aoc2022\\day05\\input.txt")
+    t = Crates("C:\\Users\\Jurph\\Documents\\Python Scripts\\aoc2022\\day05\\test.txt")
+    p = Crates("C:\\Users\\Jurph\\Documents\\Python Scripts\\aoc2022\\day05\\input.txt")
 
     # Set up state variables 
-    total = 0
+    readout = ''
+    p.newprocess()
+    for stack in p.board:
+        readout += str(stack[-1])
 
-    # Find the total scores 
-    for plan in p.plan:
-        if plan[0].issubset(plan[1]):
-            total += 1
-        elif plan[0].issuperset(plan[1]):
-            total += 1
-        else:
-            pass
-    
-    print("Total number of overlapping assignments is {}".format(total))
+    print("The top crate readout is {}".format(readout))
     return
 
 if __name__ == "__main__":
